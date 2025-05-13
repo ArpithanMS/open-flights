@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: openflights
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: openflights
+  template:
+    metadata:
+      labels:
+        app: openflights
+    spec:
+      containers:
+      - name: openflights
+        image: openflights:dev
+        imagePullPolicy: Never
+        ports:
+        - containerPort: 3000
+        env:
+        - name: DATABASE_HOST
+          value: postgres
+        - name: DATABASE_USERNAME
+          value: open-flights
+        - name: DATABASE_PASSWORD
+          value: mysecretpassword
+        - name: RAILS_ENV
+          value: development
+        command: ["bash"]
+        args:
+          - -c
+          - |
+            rm -f tmp/pids/server.pid
+            bundle exec rails db:migrate
+            bundle exec rails s -b 0.0.0.0

@@ -1,0 +1,32 @@
+services:
+  db:
+    image: postgres:15
+    container_name: postgres
+    environment:
+      POSTGRES_USER: open-flights
+      POSTGRES_PASSWORD: mysecretpassword
+      POSTGRES_DB: open-flights_development
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+  web:
+    build:
+      context: ..  # Assuming the Dockerfile is inside the `docker/` folder
+      dockerfile: docker/Dockerfile
+    container_name: openflights
+    command: bash -c "rm -f tmp/pids/server.pid && bundle exec rails s -b 0.0.0.0"
+    volumes:
+      - ..:/app  # Ensure the volume paths are correct
+    ports:
+      - "3000:3000"
+    depends_on:
+      - db
+    environment:
+      database: development
+      DATABASE_HOST: db
+      DATABASE_USERNAME: open-flights
+      DATABASE_PASSWORD: mysecretpassword
+volumes:
+  pgdata:

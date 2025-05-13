@@ -1,0 +1,32 @@
+FROM ruby:3.2
+
+# Install system dependencies + Node.js 20 LTS from official source
+RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - && \
+    apt-get update -qq && \
+    apt-get install -y \
+    build-essential \
+    libpq-dev \
+    nodejs \
+    postgresql-client \
+    curl \
+    git
+
+# Install Yarn from official Yarn repository (NOT via npm or apt!)
+RUN curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add - && \
+    echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list && \
+    apt-get update && \
+    apt-get install -y yarn
+
+WORKDIR /app
+
+COPY Gemfile Gemfile
+COPY Gemfile.lock Gemfile.lock
+RUN bundle install
+
+COPY . .
+
+RUN yarn install
+RUN NODE_OPTIONS=--openssl-legacy-provider bundle exec rake assets:precompile
+
+EXPOSE 3000
+CMD ["rails", "server", "-b", "0.0.0.0"]

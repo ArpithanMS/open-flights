@@ -5,15 +5,18 @@ module Api
       before_action :authenticate, only: %i[logout]
 
       def create
-        user = User.find_by(email: params[:user][:email])
+        user_params = params.require(:user).permit(:email, :password, :password_confirmation)
 
-        if user && user.authenticate(params[:user][:password])
+        user = User.new(user_params)
+
+        if user.save
           session[:user_id] = user.id
-          render json: { status: :success, logged_in: true }, status: 204
+          render json: { status: :success, logged_in: true }, status: :created
         else
-          render json: { status: :error, logged_in: false }, status: 400
+          render json: { status: :error, logged_in: false, errors: user.errors.full_messages }, status: :unprocessable_entity
         end
       end
+
 
       def logout
         reset_session
