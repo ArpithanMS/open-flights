@@ -1,13 +1,13 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: openflights
+  name: openflights-app
   namespace: argocd
 spec:
   project: default
   source:
-    repoURL: git@github.com:yourusername/open-flights.git
-    targetRevision: HEAD
+    repoURL: https://github.com/ArpithanMS/openflights-deploy.git
+    targetRevision: main
     path: k8s
   destination:
     server: https://kubernetes.default.svc
@@ -16,3 +16,5 @@ spec:
     automated:
       prune: true
       selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
