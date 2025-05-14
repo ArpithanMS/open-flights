@@ -24,3 +24,6 @@ yarn-debug.log*
 
 # Ignore application configuration
 /config/application.yml
+
+# Ignore large local binaries
+argocd.exe
