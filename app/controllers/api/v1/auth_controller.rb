@@ -2,11 +2,9 @@ module Api
   module V1
     class AuthController < ApiController
       include Resettable
-      before_action :authenticate, only: %i[logout]
+      before_action :authenticate, only: [:logout]
 
       def create
-        user_params = params.require(:user).permit(:email, :password, :password_confirmation)
-
         user = User.new(user_params)
 
         if user.save
@@ -17,21 +15,24 @@ module Api
         end
       end
 
-
       def logout
         reset_session
-
-        render json: { logged_in: false }, status: 200
+        render json: { logged_in: false }, status: :ok
       end
 
       def logged_in
         if current_user
-          render json: { email: current_user&.email, logged_in: true }, status: 200
+          render json: { email: current_user.email, logged_in: true }, status: :ok
         else
-          render json: { logged_in: false }, status: 200
+          render json: { logged_in: false }, status: :ok
         end
+      end
+
+      private
+
+      def user_params
+        params.require(:user).permit(:email, :password, :password_confirmation)
       end
     end
   end
 end
-
