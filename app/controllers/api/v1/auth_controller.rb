@@ -1,7 +1,7 @@
 # app/controllers/api/v1/auth_controller.rb
 module Api
   module V1
-    class AuthController < Api::V1::ApiController
+    class AuthController < ApiController
       include Resettable
       before_action :authenticate, only: [:logout]
 
