@@ -1,12 +1,12 @@
+# app/controllers/api/v1/auth_controller.rb
 module Api
   module V1
-    class AuthController < ApiController
+    class AuthController < Api::V1::ApiController
       include Resettable
       before_action :authenticate, only: [:logout]
 
       def create
         user = User.new(user_params)
-
         if user.save
           session[:user_id] = user.id
           render json: { status: :success, logged_in: true }, status: :created
